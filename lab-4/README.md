@@ -1,4 +1,4 @@
-# Docker Advanced - Linux (Part 4): Docker Swarm
+# Docker - Linux (Part 4): Docker Swarm
 
 So far all of the previous exercises have been based around running a single container on a single host.
 
@@ -6,10 +6,11 @@ This section will cover how to use multiple hosts to provide fault tolerance as 
 
 
 > * [Task 1: Build your own cluster](#Task_1)
-> * [Task 2: Deploying an Application with Docker Swarm](#Task_2)
-> * [Task 3: Upgrades and Rollback](#Task_3)
-> * [Task 4: Scale the front end](#Task_4)
-> * [Task 5: Failure and recovery](#Task_5)
+> * [Task 2: Overlay Networking](#Task_2)
+> * [Task 3: Deploying an Application with Docker Swarm](#Task_3)
+> * [Task 4: Upgrades and Rollback](#Task_4)
+> * [Task 5: Scale the front end](#Task_5)
+> * [Task 6: Failure and recovery](#Task_6)
 
 
 ## <a name="task1"></a>Task 1: Build your own cluster
@@ -82,7 +83,138 @@ Note: If you have just completed a previous part of the workshop, please close t
     Error response from daemon: This node is not a swarm manager. Worker nodes can't be used to view or modify cluster state. Please run this command on a manager node or promote the current node to a manager.
     ```
 
-## <a name="task2"></a>Task 2: Deploying an Application with Docker Swarm
+    ## <a name="task2"></a>Task 2: Overlay Networking
+
+    ### Overlay Networking Overview
+
+    Overlay networks in Docker are software defined networks that span multiple hosts (unlike a bridge network which is limited to a single Docker host). This allows containers on different hosts to easily communicate on the Docker networking fabric (vs having to move out to the host's network).
+
+    This next section covers building an overlay network and having two containers communicate with each other.
+
+    1. Remove the existing Alpine containers
+
+        ```
+        $ docker container rm --force $(docker ps --all --quiet)
+        e65629beeb57
+        5cc5eeaf703b
+        ```
+
+    2. Create a new overlay network (`-d` specifies the networking driver to use, if it's omitted `bridge` is the default).
+
+        ```
+        $ docker network create --attachable -d overlay myoverlay
+        z16nhzxwbeukjnz3e6nk2159p
+        ```
+
+        > Note: We have to use the `--attachable` flag because by default you cannot use `docker run` on overlay networks that are part of a swarm. The preferred method is to use a Docker *service* which is covered later in the workshop.
+
+    3. List the networks on the host to verify that the `myoverlay` network was created.
+
+        ```
+        $ docker network ls
+        NETWORK ID          NAME                DRIVER              SCOPE
+        edf9dc771fc4        bridge              bridge              local
+        e5702f60b7c9        docker_gwbridge     bridge              local
+        7d6b733ee498        host                host                local
+        rnyatjul3qhn        ingress             overlay             swarm
+        52fb9de4ad1c        mybridge            bridge              local
+        z16nhzxwbeuk        myoverlay           overlay             swarm
+        dbd52ffda3ae        none                null                local
+        ```
+
+    3. Create an Alpine container and attach it to the `myoverlay` network.
+
+        ```
+        $ docker container run \
+          --detach \
+          --network myoverlay \
+          --name alpine_host \
+          alpine top
+        a604aa48660835aeec75f3239964d35c334bcdf33d1b5574c319aaf344c2119a
+        ```
+
+    4. Move to `node2`
+
+    5. List the available networks
+
+        ```
+        $ docker network ls
+        NETWORK ID          NAME                DRIVER              SCOPE
+        3bc2a78be20f        bridge              bridge              local
+        641bdc72dc8b        docker_gwbridge     bridge              local
+        a5ef170a2758        host                host                local
+        rnyatjul3qhn        ingress             overlay             swarm
+        3dec80db87e4        none                null                local
+        ```
+
+        Notice anything out of the ordinary? Where's the `myoverlay` network?
+
+        Docker won't extend the network to hosts where it's not needed. In this case, there are no containers attached to `myoverlay` on `node2` so the network has not been extended to the host.
+
+    6. Start an alpine container and attach it to `myoverlay`
+
+        ```
+        $ docker container run \
+          --detach \
+          --network myoverlay \
+          --name alpine_client \
+          alpine top
+        Unable to find image 'alpine:latest' locally
+        latest: Pulling from library/alpine
+        88286f41530e: Pull complete
+        Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
+        Status: Downloaded newer image for alpine:latest
+        5d67e360d8e42c618dc8ea40ecd745280a8002652c7bcdc7982cb5c6cdd4fd13
+        ```
+
+    7. List the available networks on `node2`
+
+        ```
+        $ docker network ls
+        NETWORK ID          NAME                DRIVER              SCOPE
+        3bc2a78be20f        bridge              bridge              local
+        641bdc72dc8b        docker_gwbridge     bridge              local
+        a5ef170a2758        host                host                local
+        rnyatjul3qhn        ingress             overlay             swarm
+        z2fh5l7g1b4k        myoverlay           overlay             swarm
+        3dec80db87e4        none                null                local
+        ```
+
+        The `myoverlay` network is now available on `node2`
+
+    8. Ping `apine_host`
+
+        ```
+        $ docker exec alpine_client ping -c 5 alpine_host
+        PING alpine_host (10.0.0.2): 56 data bytes
+        64 bytes from 10.0.0.2: seq=0 ttl=64 time=0.244 ms
+        64 bytes from 10.0.0.2: seq=1 ttl=64 time=0.122 ms
+        64 bytes from 10.0.0.2: seq=2 ttl=64 time=0.166 ms
+        64 bytes from 10.0.0.2: seq=3 ttl=64 time=0.201 ms
+        64 bytes from 10.0.0.2: seq=4 ttl=64 time=0.137 ms
+        ```
+        Networking also works betwen Linux and Windows nodes
+
+    9. Move to the `node3`
+
+    10. Ping `alpine_host` from the `node3`
+
+        ```
+        docker container run \
+          --rm \
+          --network myoverlay \
+          alpine ping alpine_host
+
+        Pinging alpine_host [10.0.0.2] with 32 bytes of data:
+        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+        ```
+
+        > Note: In some cases it may take a few seconds for the client to find the alpine host resutling in PING timeouts. If this happens, simply retry the above command.
+
+## <a name="task3"></a>Task 3: Deploying an Application with Docker Swarm
 This lab will deploy a two service application.  The application features a Java-based web front end running on Linux, and a Microsoft SQL server running on Windows.
 
 ### Deploying an Application with Docker Swarm
@@ -171,7 +303,7 @@ Another key point is that our application code knows nothing about our networkin
 So long as the database service is started with the name `database` and is on the same Swarm network, the two services can talk.
 
 
-## <a name="task3"></a>Task 3: Upgrades and Rollback
+## <a name="task4"></a>Task 4: Upgrades and Rollback
 A common scenario is the need to upgrade an application or application component. In this section we are going to unsuccessfully attempt to ugrade the web front-end. We'll rollback from that attempt, and then perform a successful upgrade.
 
 ### Upgrades and Rollback
@@ -272,7 +404,7 @@ A common scenario is the need to upgrade an application or application component
 
 10. Once the status reports back "Running xx seconds", reload website the website once again to verify that the new version has been deployed
 
-## <a name="task4"></a>Task 4: Scale the front end
+## <a name="task5"></a>Task 5: Scale the front end
 Sometimes you need to scale your application for peaks like "Black Friday sales". With Docker Swarm is quite easy.
 
 ### Scale the front end
@@ -312,7 +444,7 @@ Docker is starting up 5 new instances of the appserver, and is placing them acro
 
 When all 6 nodes are running, move on to the next step.
 
-## <a name="task5"></a>Task 5: Failure and recovery
+## <a name="task6"></a>Task 6: Failure and recovery
 The next exercise simulates a node failure. When a node fails the containers that were running there are, of course, lost as well. Swarm is constantly monitoring the state of the cluster, and when it detects an anomoly it attemps to bring the cluster back in to compliance.
 
 ### Failure and recovery
