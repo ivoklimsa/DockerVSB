@@ -3,8 +3,8 @@
 In this lab we'll setup access for DockerID and LinuxVMs.
 
 
-> * [Task 1: Prerequisites](#Task_1)
-> * [Task 2: Simple Docker container](#Task_2)
+> * [Task 1: Prerequisites](#Task1)
+> * [Task 2: Simple Docker container](#Task2)
 
 ## <a name="Task1"></a>Task 1: Prerequisites
 
