@@ -16,7 +16,7 @@ If you do not have a DockerID (a free login used to access Docker Cloud, Docker 
 
 
 ### Access your Linux VM
-1. Visit [Play With Docker](https://hybrid.play-with-docker.com)
+1. Visit [Play With Docker](https://labs.play-with-docker.com)
 2. Click `Start Session`
 2. On the left click `+ Add New Instance`
 
