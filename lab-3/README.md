@@ -12,9 +12,9 @@ Bridge networks are only available on the local host, and can be created on host
 
 Overlay networks facilitate the creation of networks that span Docker hosts. While it's possible to network together hosts that are not in a Swarm cluster, it's a very manual task requiring the addition of an external key value store. With Docker swarm creating overlay networks is trivial.
 
-> * [Task 1: Bridge networking](#Task_1)
+> * [Task 1: Bridge networking](#Task1)
 
-## <a name="task1"></a>Task 1: Bridge networking
+## <a name="Task1"></a>Task 1: Bridge networking
 
 
 ### Bridge networking overview

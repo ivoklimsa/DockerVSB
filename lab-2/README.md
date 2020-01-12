@@ -17,7 +17,13 @@ The following exercises will help to illustrate those concepts in practice.
 
 Let's start by looking at layers and how files written to a container are managed by something called *copy on write*.
 
-## Layers and Copy on Write
+> * [Task 1: Layers and Copy on Write](#Task1)
+> * [Task 2: Understanding Docker Volumes](#Task2)
+> * [Task 3: Anonymous Volumes](#Task3)
+> * [Task 4: Understanding Docker Volumes](#Task4)
+
+
+## <a name="Task1"></a>Task 1: Layers and Copy on Write
 
 > Note: If you have just completed part 1 of the workshop, please close that session and start a new one.
 
@@ -68,7 +74,7 @@ Let's start by looking at layers and how files written to a container are manage
 
     So layers are created by Dockerfiles and are are shared between images. When you start a container, a writeable layer is added to the base image.
 
-## Understanding Docker Volumes
+## <a name="Task2"></a>Task 2: Understanding Docker Volumes
 
 [Docker volumes](https://docs.docker.com/engine/admin/volumes/volumes/) are directories on the host file system that are not managed by the storage driver. Since they are not managed by the storage drive they offer a couple of important benefits.
 
@@ -82,7 +88,7 @@ The next sections will cover both anonymous and named volumes.
 
 > Special Note: These next sections were adapted from [Arun Gupta's](https://twitter.com/arungupta) excellent [tutorial](http://blog.arungupta.me/docker-mysql-persistence/) on persisting data with MySQL.
 
-### Anonymous Volumes
+### <a name="Task3"></a>Task 3: Anonymous Volumes
 
 If you once again look at the MySQL [Dockerfile](https://github.com/docker-library/mysql/blob/0590e4efd2b31ec794383f084d419dea9bc752c4/5.7/Dockerfile) you will find the following line:
 
@@ -339,7 +345,7 @@ So while a volume was used to store the new table in the original container, bec
 
 To achieve persistence a named volume should be used.
 
-### Named Volumes
+### <a name="Task4"></a>Task 4: Named Volumes
 
 A named volume (as the name implies) is a volume that's been explicitly named and can easily be referenced.
 
