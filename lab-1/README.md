@@ -6,6 +6,9 @@ In this lab we'll setup access for DockerID and LinuxVMs.
 > * [Task 1: Prerequisites](#Task1)
 > * [Task 2: Simple Docker container](#Task2)
 
+
+> Note: Docker CLI Cheatsheet  https://devhints.io/docker
+
 ## <a name="Task1"></a>Task 1: Prerequisites
 
 Before we start, you'll need to gain access to your Linux VM, clone a GitHub repo, and make sure you have a DockerID.
