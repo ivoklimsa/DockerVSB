@@ -6,7 +6,7 @@ In this lab we'll setup access for DockerID and LinuxVMs.
 > * [Task 1: Prerequisites](#Task_1)
 > * [Task 2: Simple Docker container](#Task_2)
 
-## <a name="task1"></a>Task 1: Prerequisites
+## <a name="Task1"></a>Task 1: Prerequisites
 
 Before we start, you'll need to gain access to your Linux VM, clone a GitHub repo, and make sure you have a DockerID.
 
@@ -35,7 +35,7 @@ remote: Total 88 (delta 33), reused 88 (delta 33), pack-reused 0
 Unpacking objects: 100% (88/88), done.
 ```
 
-## <a name="task2"></a>Task 2: Run some simple Docker containers
+## <a name="Task2"></a>Task 2: Run some simple Docker containers
 
 In this section you'll deploy simple Docker container.
 
