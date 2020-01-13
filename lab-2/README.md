@@ -17,7 +17,7 @@ The following exercises will help to illustrate those concepts in practice.
 
 Let's start by looking at layers and how files written to a container are managed by something called *copy on write*.
 
-> * [Task 1: Layers and Copy on Write](#Task1)
+> * [Task 1: Layers and Copy on Write](#Task1) verze upravit
 > * [Task 2: Understanding Docker Volumes](#Task2)
 > * [Task 3: Anonymous Volumes](#Task3)
 > * [Task 4: Understanding Docker Volumes](#Task4)
@@ -32,11 +32,12 @@ Let's start by looking at layers and how files written to a container are manage
 1. Pull down the Debian:Jessie image
 
     ```
-    $ docker image pull debian:jessie
-    jessie: Pulling from library/debian
-    85b1f47fba49: Pull complete
-    Digest: sha256:f51cf81db2de8b5e9585300f655549812cdb27c56f8bfb992b8b706378cd517d
-    Status: Downloaded newer image for debian:jessie
+    $ docker image pull oraclelinux:7-slim
+    7-slim: Pulling from library/oraclelinux
+    822ace0353cb: Pull complete
+    Digest: sha256:a6448d29f84bc49683ca40e55c90c6f64d823d3b68cfcd6800a4af7e03b619a8
+    Status: Downloaded newer image for oraclelinux:7-slim
+    docker.io/library/oraclelinux:7-slim
     ```
 
 2. Pull down a MySQL image
@@ -118,7 +119,7 @@ Note: An anonymous volume is a volume that hasn't been explicitly named. This me
     in the /mysqldb container /var/lib/mysql is mapped to /var/lib/docker/volumes/cd79b3301df29d13a068d624467d6080354b81e34d794b615e6e93dd61f89628/_data
     ```
 
-3. Change into the volume directory on the local host file system and list the contents
+3. Change into the volume directory on the local host file system and list the contents #vypis!!!
 
     ```
     $ cd $(docker inspect -f '{{(index .Mounts 0).Source}}' mysqldb)

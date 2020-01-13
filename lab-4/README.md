@@ -91,126 +91,119 @@ Overlay networks in Docker are software defined networks that span multiple host
 
 This next section covers building an overlay network and having two containers communicate with each other.
 
-1. Remove the existing Alpine containers
 
-        ```
-        $ docker container rm --force $(docker ps --all --quiet)
-        e65629beeb57
-        5cc5eeaf703b
-        ```
+1. Create a new overlay network (`-d` specifies the networking driver to use, if it's omitted `bridge` is the default).
 
-2. Create a new overlay network (`-d` specifies the networking driver to use, if it's omitted `bridge` is the default).
+    ```
+    $ docker network create --attachable -d overlay myoverlay
+    z16nhzxwbeukjnz3e6nk2159p
+    ```
 
-        ```
-        $ docker network create --attachable -d overlay myoverlay
-        z16nhzxwbeukjnz3e6nk2159p
-        ```
+> Note: We have to use the `--attachable` flag because by default you cannot use `docker run` on overlay networks that are part of a swarm. The preferred method is to use a Docker *service* which is covered later in the workshop.
 
-        > Note: We have to use the `--attachable` flag because by default you cannot use `docker run` on overlay networks that are part of a swarm. The preferred method is to use a Docker *service* which is covered later in the workshop.
+2. List the networks on the host to verify that the `myoverlay` network was created.
 
-3. List the networks on the host to verify that the `myoverlay` network was created.
+    ```
+    $ docker network ls
+    NETWORK ID          NAME                DRIVER              SCOPE
+    edf9dc771fc4        bridge              bridge              local
+    e5702f60b7c9        docker_gwbridge     bridge              local
+    7d6b733ee498        host                host                local
+    rnyatjul3qhn        ingress             overlay             swarm
+    52fb9de4ad1c        mybridge            bridge              local
+    z16nhzxwbeuk        myoverlay           overlay             swarm
+    dbd52ffda3ae        none                null                local
+    ```
 
-        ```
-        $ docker network ls
-        NETWORK ID          NAME                DRIVER              SCOPE
-        edf9dc771fc4        bridge              bridge              local
-        e5702f60b7c9        docker_gwbridge     bridge              local
-        7d6b733ee498        host                host                local
-        rnyatjul3qhn        ingress             overlay             swarm
-        52fb9de4ad1c        mybridge            bridge              local
-        z16nhzxwbeuk        myoverlay           overlay             swarm
-        dbd52ffda3ae        none                null                local
-        ```
+3. Create an Alpine container and attach it to the `myoverlay` network.
 
-4. Create an Alpine container and attach it to the `myoverlay` network.
+    ```
+    $ docker container run \
+      --detach \
+      --network myoverlay \
+      --name alpine_host \
+      alpine top
+      a604aa48660835aeec75f3239964d35c334bcdf33d1b5574c319aaf344c2119a
+    ```
 
-        ```
-        $ docker container run \
-          --detach \
-          --network myoverlay \
-          --name alpine_host \
-          alpine top
-        a604aa48660835aeec75f3239964d35c334bcdf33d1b5574c319aaf344c2119a
-        ```
+4. Move to `node2`
 
-5. Move to `node2`
+5. List the available networks
 
-6. List the available networks
-
-        ```
-        $ docker network ls
-        NETWORK ID          NAME                DRIVER              SCOPE
-        3bc2a78be20f        bridge              bridge              local
-        641bdc72dc8b        docker_gwbridge     bridge              local
-        a5ef170a2758        host                host                local
-        rnyatjul3qhn        ingress             overlay             swarm
-        3dec80db87e4        none                null                local
-        ```
+    ```
+    $ docker network ls
+    NETWORK ID          NAME                DRIVER              SCOPE
+    3bc2a78be20f        bridge              bridge              local
+    641bdc72dc8b        docker_gwbridge     bridge              local
+    a5ef170a2758        host                host                local
+    rnyatjul3qhn        ingress             overlay             swarm
+    3dec80db87e4        none                null                local
+    ```
 
 Notice anything out of the ordinary? Where's the `myoverlay` network?
 
 Docker won't extend the network to hosts where it's not needed. In this case, there are no containers attached to `myoverlay` on `node2` so the network has not been extended to the host.
 
-7. Start an alpine container and attach it to `myoverlay`
+6. Start an alpine container and attach it to `myoverlay`
 
-        ```
-        $ docker container run \
-          --detach \
-          --network myoverlay \
-          --name alpine_client \
-          alpine top
-        Unable to find image 'alpine:latest' locally
-        latest: Pulling from library/alpine
-        88286f41530e: Pull complete
-        Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
-        Status: Downloaded newer image for alpine:latest
-        5d67e360d8e42c618dc8ea40ecd745280a8002652c7bcdc7982cb5c6cdd4fd13
-        ```
+    ```
+    $ docker container run \
+      --detach \
+      --network myoverlay \
+      --name alpine_client \
+      alpine top
+      Unable to find image 'alpine:latest' locally
+      latest: Pulling from library/alpine
+      88286f41530e: Pull complete
+      Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
+      Status: Downloaded newer image for alpine:latest
+      5d67e360d8e42c618dc8ea40ecd745280a8002652c7bcdc7982cb5c6cdd4fd13
+    ```
 
-8. List the available networks on `node2`
+7. List the available networks on `node2`
 
-        ```
-        $ docker network ls
-        NETWORK ID          NAME                DRIVER              SCOPE
-        3bc2a78be20f        bridge              bridge              local
-        641bdc72dc8b        docker_gwbridge     bridge              local
-        a5ef170a2758        host                host                local
-        rnyatjul3qhn        ingress             overlay             swarm
-        z2fh5l7g1b4k        myoverlay           overlay             swarm
-        3dec80db87e4        none                null                local
-        ```
+    ```
+    $ docker network ls
+    NETWORK ID          NAME                DRIVER              SCOPE
+    3bc2a78be20f        bridge              bridge              local
+    641bdc72dc8b        docker_gwbridge     bridge              local
+    a5ef170a2758        host                host                local
+    rnyatjul3qhn        ingress             overlay             swarm
+    z2fh5l7g1b4k        myoverlay           overlay             swarm
+    3dec80db87e4        none                null                local
+    ```
 
 The `myoverlay` network is now available on `node2`
 
-9. Ping `apine_host`
+8. Ping `apine_host`
 
-        ```
-        $ docker exec alpine_client ping -c 5 alpine_host
-        PING alpine_host (10.0.0.2): 56 data bytes
-        64 bytes from 10.0.0.2: seq=0 ttl=64 time=0.244 ms
-        64 bytes from 10.0.0.2: seq=1 ttl=64 time=0.122 ms
-        64 bytes from 10.0.0.2: seq=2 ttl=64 time=0.166 ms
-        64 bytes from 10.0.0.2: seq=3 ttl=64 time=0.201 ms
-        64 bytes from 10.0.0.2: seq=4 ttl=64 time=0.137 ms
-        ```
+    ```
+    $ docker exec alpine_client ping -c 5 alpine_host
+    PING alpine_host (10.0.0.2): 56 data bytes
+    64 bytes from 10.0.0.2: seq=0 ttl=64 time=0.244 ms
+    64 bytes from 10.0.0.2: seq=1 ttl=64 time=0.122 ms
+    64 bytes from 10.0.0.2: seq=2 ttl=64 time=0.166 ms
+    64 bytes from 10.0.0.2: seq=3 ttl=64 time=0.201 ms
+    64 bytes from 10.0.0.2: seq=4 ttl=64 time=0.137 ms
+    ```
 Networking also works betwen Linux and Windows nodes
 
-10. Move to the `node3`
+9. Move to the `node3`
 
-11. Ping `alpine_host` from the `node3`
+10. Ping `alpine_host` from the `node3`
 
-        ```
-        docker container run \
-          --rm \
-          --network myoverlay \
-          alpine ping alpine_host
+    ```
+    docker container run \
+    --rm \
+    --network myoverlay \
+    alpine ping alpine_host
 
-        Pinging alpine_host [10.0.0.2] with 32 bytes of data:
-        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
-        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
-        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
-        Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
-        ```
+    Pinging alpine_host [10.0.0.2] with 32 bytes of data:
+    Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+    Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+    Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+    Reply from 10.0.0.2: bytes=32 time<1ms TTL=64
+    ```
 
 > Note: In some cases it may take a few seconds for the client to find the alpine host resutling in PING timeouts. If this happens, simply retry the above command.
 
@@ -362,7 +355,7 @@ A common scenario is the need to upgrade an application or application component
     appserver
     ```
 
- 6. Check on the status of the service
+6. Check on the status of the service
 
     ```
     $ docker service ps appserver
