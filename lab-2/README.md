@@ -17,7 +17,7 @@ The following exercises will help to illustrate those concepts in practice.
 
 Let's start by looking at layers and how files written to a container are managed by something called *copy on write*.
 
-> * [Task 1: Layers and Copy on Write](#Task1) verze upravit
+> * [Task 1: Layers and Copy on Write](#Task1)
 > * [Task 2: Understanding Docker Volumes](#Task2)
 > * [Task 3: Anonymous Volumes](#Task3)
 > * [Task 4: Understanding Docker Volumes](#Task4)
