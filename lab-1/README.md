@@ -48,16 +48,16 @@ In this step we're going to start a new container and tell it to run the `hostna
 
 Run the following command in your Linux console:
 
-    ```
-    $ docker container run alpine hostname
-    Unable to find image 'alpine:latest' locally
-    latest: Pulling from library/alpine
-    88286f41530e: Pull complete
-    Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
-    Status: Downloaded newer image for alpine:latest
-    888e89a3b36b
-    ```
+```
+$ docker container run alpine hostname
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+88286f41530e: Pull complete
+Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
+Status: Downloaded newer image for alpine:latest
+888e89a3b36b
+```
 
-    The output above shows that the `alpine:latest` image could not be found locally. When this happens, Docker automatically *pulls* it form Docker Hub.
+The output above shows that the `alpine:latest` image could not be found locally. When this happens, Docker automatically *pulls* it form Docker Hub.
 
-    After the image is pulled, the container's hostname is displayed (`888e89a3b36b` in the example above).
+After the image is pulled, the container's hostname is displayed (`888e89a3b36b` in the example above).
