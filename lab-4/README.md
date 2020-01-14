@@ -2,7 +2,7 @@
 
 So far all of the previous exercises have been based around running a single container on a single host.
 
-This section will cover how to use multiple hosts to provide fault tolerance as well as increased performance. As part of that discussion it will also provide an overview of Docker's multi-host networking capabilities.
+This section will cover how to use multiple hosts to provide fault tolerance as well as increased performance. As part of that discussion, it will also provide an overview of Docker's multi-host networking capabilities.
 
 
 > * [Task 1: Build your own cluster](#Task1)
@@ -175,7 +175,7 @@ Docker won't extend the network to hosts where it's not needed. In this case, th
 
 The `myoverlay` network is now available on `node2`
 
-8. Ping `apine_host`
+8. Ping `alpine_host`
 
     ```
     $ docker exec alpine_client ping -c 5 alpine_host
@@ -208,7 +208,7 @@ Networking also works betwen Linux and Windows nodes
 > Note: In some cases it may take a few seconds for the client to find the alpine host resutling in PING timeouts. If this happens, simply retry the above command.
 
 ## <a name="Task3"></a>Task 3: Deploying an Application with Docker Swarm
-This lab will deploy a two service application.  The application features a Java-based web front end running on Linux, and a Microsoft SQL server running on Windows.
+This lab will deploy a two service application.  The application features a Java-based web front-end running on Linux, and a Microsoft SQL server running on Windows.
 
 ### Deploying an Application with Docker Swarm
 
@@ -297,7 +297,7 @@ So long as the database service is started with the name `database` and is on th
 
 
 ## <a name="Task4"></a>Task 4: Upgrades and Rollback
-A common scenario is the need to upgrade an application or application component. In this section we are going to unsuccessfully attempt to ugrade the web front-end. We'll rollback from that attempt, and then perform a successful upgrade.
+A common scenario is the need to upgrade an application or application component. In this section we are going to unsuccessfully attempt to upgrade the web front-end. We'll rollback from that attempt, and then perform a successful upgrade.
 
 ### Upgrades and Rollback
 
@@ -343,7 +343,7 @@ A common scenario is the need to upgrade an application or application component
 
     Because we had set ` --update-failure-action` to pause, Swarm paused the update.
 
-    In the case of failed upgrade, Swarm makes it easy to recover. Simply issue the `--rollback` command to the service.
+    In the case of a failed upgrade, Swarm makes it easy to recover. Simply issue the `--rollback` command to the service.
 
 5. Roll the service back to the original version
 
@@ -395,14 +395,14 @@ A common scenario is the need to upgrade an application or application component
     u6wd7wje82zn         \_ appserver.1     solarwinds/awesomeapp:2.0   node1Shutdown            Failed 2 minutes ago      "task: non-zero exit (143): do…"
     ```
 
-10. Once the status reports back "Running xx seconds", reload website the website once again to verify that the new version has been deployed
+10. Once the status reports back "Running xx seconds", reload the website once again to verify that the new version has been deployed
 
 ## <a name="Task5"></a>Task 5: Scale the front end
-Sometimes you need to scale your application for peaks like "Black Friday sales". With Docker Swarm is quite easy.
+Sometimes you need to scale your application for peaks like "Black Friday sales". With Docker Swarm it is quite easy.
 
-### Scale the front end
+### Scale the front-end
 
-The new update has really increased traffic to the site. As a result we need to scale our web front end out. This is done by issuing a `docker service update` and specifying the number of replicas to deploy.
+The new update has really increased traffic to the site. As a result we need to scale our web front-end out. This is done by issuing a `docker service update` and specifying the number of replicas to deploy.
 
 1. Scale to 6 replicas of the web front-end
 
@@ -438,12 +438,12 @@ Docker is starting up 5 new instances of the appserver, and is placing them acro
 When all 6 nodes are running, move on to the next step.
 
 ## <a name="Task6"></a>Task 6: Failure and recovery
-The next exercise simulates a node failure. When a node fails the containers that were running there are, of course, lost as well. Swarm is constantly monitoring the state of the cluster, and when it detects an anomoly it attemps to bring the cluster back in to compliance.
+The next exercise simulates a node failure. When a node fails, the containers that were running there are, of course, lost as well. Swarm is constantly monitoring the state of the cluster, and when it detects an anomaly, it attempts to bring the cluster back into compliance.
 
 ### Failure and recovery
 
 
-In it's current state, Swarm expects there to be six instances of the appserver. When the node "fails" thre of those instances will go out of service.
+In its current state, Swarm expects there to be six instances of the appserver. When the node "fails", three of those instances will go out of service.
 
 1. Putting a node into *drain* mode forces it to stop all the running containers it hosts, as well as preventing it from running any additional containers.
 
@@ -473,7 +473,7 @@ In it's current state, Swarm expects there to be six instances of the appserver.
     jqkokd2uoki6        appserver.6         solarwinds/awesomeapp:3.0   node1               Running             Running 6 minutes ago
     ```
 
-    The output above shows the containers that werer running on `node2` have been shut down and are being restarted on `node`
+    The output above shows the containers that were running on `node2` have been shut down and are being restarted on `node1`
 
 3. List the status of our services
 
