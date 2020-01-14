@@ -2,16 +2,16 @@
 
 We had an introduction to volumes by way of bind mounts earlier, but let's take a deeper look at the Docker file system and volumes.
 
-The [Docker documentation](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/_) gives a great explanation on how storage works with Docker images and containers, but here's the high points.
+The [Docker documentation](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/_) gives a great explanation of how storage works with Docker images and containers, but here are the high points.
 
 * Images are comprised of layers
 * These layers are added by each line in a Dockerfile
 * Images on the same host or registry will share layers if possible
-* When container is started it gets a unique writeable layer of its own to capture changes that occur while it's running
+* When a container is started, it gets a unique writeable layer of its own to capture changes that occur while it's running
 * Layers exist on the host file system in some form (usually a directory, but not always) and are managed by a [storage driver](https://docs.docker.com/engine/userguide/storagedriver/selectadriver/) to present a logical filesystem in the running container.
-* When a container is removed the unique writeable layer (and everything in it) is removed as well
-* To persist data (and improve performance) Volumes are used.
-* Volumes (and the directories they are built on) are not managed by the storage driver, and will live on if a container is removed.  
+* When a container is removed, the unique writeable layer (and everything in it) is removed as well
+* To persist data (and improve performance), Volumes are used.
+* Volumes (and the directories they are built on) are not managed by the storage driver and will live on if a container is removed.  
 
 The following exercises will help to illustrate those concepts in practice.
 
@@ -27,7 +27,7 @@ Let's start by looking at layers and how files written to a container are manage
 
 > Note: If you have just completed part 1 of the workshop, please close that session and start a new one.
 
-1. In PWD click "+Add new instance" and move into that command windows.
+1. In PWD click "+Add new instance" and move into that command window.
 
 1. Pull down the Alpine image
 
@@ -39,7 +39,7 @@ Let's start by looking at layers and how files written to a container are manage
     Status: Downloaded newer image for alpine:3.11
     ```
 
-2. Pull down a Alpine example image with added command
+2. Pull down an Alpine example image with added command
 
     ```
     $ docker pull ivoklimsa/examples:alpine_example
@@ -50,7 +50,7 @@ Let's start by looking at layers and how files written to a container are manage
     Status: Downloaded newer image for ivoklimsa/examples:alpine_example
     ```
 
-    What do you notice about those the output from the Docker pull request for MySQL?
+    What do you notice about the output from the Docker pull request for MySQL?
 
     The first layer pulled says:
 
@@ -62,17 +62,17 @@ Let's start by looking at layers and how files written to a container are manage
 
     The first line in the the Dockerfile is: `FROM alpine:3.11` This will import that layer into the Alpine_example image.
 
-    So layers are created by Dockerfiles and are are shared between images. When you start a container, a writeable layer is added to the base image.
+    So layers are created by Dockerfiles and are shared between images. When you start a container, a writeable layer is added to the base image.
 
 ## <a name="Task2"></a>Task 2: Understanding Docker Volumes
 
 [Docker volumes](https://docs.docker.com/engine/admin/volumes/volumes/) are directories on the host file system that are not managed by the storage driver. Since they are not managed by the storage drive they offer a couple of important benefits.
 
-* **Performance**: Because the storage driver has to create the logical filesystem in the container from potentially many directories on the local host, accessing data can be slow. Especially if there is a lot of write activity to that container. In fact you should try and minimize the amount of writes that happen to the container's filesystem, and instead direct those writes to a volume
+* **Performance**: Because the storage driver has to create the logical filesystem in the container from potentially many directories on the local host, accessing data can be slow. Especially if there is a lot of write activity to that container. In fact, you should try and minimize the number of writes that happen to the container's filesystem, and instead direct those writes to a volume
 
 * **Persistence**: Volumes are not removed when the container is deleted. They exist until explicitly removed. This means data written to a volume can be reused by other containers.
 
-Volumes can be anonymous or named. Anonymous volumes have no way for the to be explicitly referenced. They are almost exclusively used for performance reasons as you cannot persist data effectively with anonymous volumes. Named volumes can be explicitly referenced so they can be used to persist data and increase performance.
+Volumes can be anonymous or named. Anonymous volumes have no way for them to be explicitly referenced. They are almost exclusively used for performance reasons as you cannot persist data effectively with anonymous volumes. Named volumes can be explicitly referenced so they can be used to persist data and increase performance.
 
 The next sections will cover both anonymous and named volumes.
 
@@ -117,7 +117,7 @@ The next sections will cover both anonymous and named volumes.
     acf185dc16e274b2f332266a1bfc6d1df7d7b4f780e6a7ec6716b40cafa5b3c3
     ```
 
-    When we start the container the anonymous volume is created:
+    When we start the container, the anonymous volume is created:
 
 3. Use Docker inspect to view the details of the anonymous volume
 
@@ -127,7 +127,7 @@ The next sections will cover both anonymous and named volumes.
     in the /mysqldb container /var/lib/mysql is mapped to /var/lib/docker/volumes/cd79b3301df29d13a068d624467d6080354b81e34d794b615e6e93dd61f89628/_data
     ```
 
-4. Change into the volume directory on the local host file system and list the contents #vypis!!!
+4. Change into the volume directory on the local host file system and list the contents
 
     ```
     $ cd $(docker inspect -f '{{(index .Mounts 0).Source}}' mysqldb)
@@ -140,9 +140,9 @@ The next sections will cover both anonymous and named volumes.
     client-key.pem      ibtmp1              sample
     ```
 
-    Notice the the directory name starts with `/var/lib/docker/volumes/` whereas for directories managed by the Overlay2 storage driver it was `/var/lib/docker/overlay2`
+    Notice the directory name starts with `/var/lib/docker/volumes/` whereas for directories managed by the Overlay2 storage driver it was `/var/lib/docker/overlay2`
 
-    As mentined anonymous volumes will not persist data between containers, they are almost always used to increase performance.
+    As mentined, anonymous volumes will not persist data between containers, they are almost always used to increase performance.
 
 5. Shell into your running MySQL container and log into MySQL
 
@@ -235,7 +235,7 @@ The next sections will cover both anonymous and named volumes.
     Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
     ```
 
-10. Ensure the table created previously table still exists
+10. Ensure the table created previously still exists
 
     ```
     mysql> connect sample;
@@ -322,7 +322,7 @@ The next sections will cover both anonymous and named volumes.
     Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
     ```
 
-17. Check to see if table created previously table still exists
+17. Check to see if the table created previously still exists
 
     ```
     mysql> connect sample;
@@ -350,15 +350,15 @@ The next sections will cover both anonymous and named volumes.
     mysqldb
     ```
 
-So while a volume was used to store the new table in the original container, because it wasn't a named volume the data could not be persisted between containers.
+So while a volume was used to store the new table in the original container, because it wasn't a named volume, the data could not be persisted between containers.
 
-To achieve persistence a named volume should be used.
+To achieve persistence, a named volume should be used.
 
 ### <a name="Task4"></a>Task 4: Named Volumes
 
 A named volume (as the name implies) is a volume that's been explicitly named and can easily be referenced.
 
-A named volume can be create on the command line, in a docker-compose file, and when you start a new container. They [CANNOT be created as part of the image's dockerfile](https://github.com/moby/moby/issues/30647).
+A named volume can be created on the command line, in a docker-compose file, and when you start a new container. They [CANNOT be created as part of the image's dockerfile](https://github.com/moby/moby/issues/30647).
 
 1. Start a MySQL container with a named volume (`dbdata`)
 
@@ -375,7 +375,7 @@ A named volume can be create on the command line, in a docker-compose file, and 
 
     Because the newly created volume is empty, Docker will copy over whatever existed in the container at `/var/lib/mysql` when the container starts.
 
-    Docker volumes are primatives just like images and containers. As such, they can be listed and removed in the same way.
+    Docker volumes are simple, just like images and containers. As such, they can be listed and removed in the same way.
 
 2. List the volumes on the Docker host
 
@@ -467,7 +467,7 @@ A named volume can be create on the command line, in a docker-compose file, and 
 
     Because the MySQL was writing out to a named volume, we can start a new container with the same data.
 
-    When the container starts it will not overwrite existing data in a volume. So the data created in the previous steps will be left intact and mounted into the new container.
+    When the container starts, it will not overwrite existing data in a volume. So the data created in the previous steps will be left intact and mounted into the new container.
 
 8. Start a new MySQL container
 
