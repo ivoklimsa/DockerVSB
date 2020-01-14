@@ -58,7 +58,7 @@ Let's start by looking at layers and how files written to a container are manage
 
     Notice that the layer id (`e6b0cf9c0882`) is the same for the first layer of the Alpine_example image and the only layer in the Alpine:3.11 image. And because we already had pulled that layer when we pulled the Alpine image, we didn't have to pull it again.
 
-    So, what does that tell us about the Alpine_example image? Since each layer is created by a line in the image's *Dockerfile*, we know that the Alpine_example image is based on the Alpine:3.11 base image. We can confirm this by looking at the [Dockerfile ](https://github.com/docker-library/mysql/blob/0590e4efd2b31ec794383f084d419dea9bc752c4/5.7/Dockerfile).
+    So, what does that tell us about the Alpine_example image? Since each layer is created by a line in the image's *Dockerfile*, we know that the Alpine_example image is based on the Alpine:3.11 base image. We can confirm this by looking at the [Dockerfile ](https://github.com/ivoklimsa/DockerVSB/blob/master/alpine/Dockerfile).
 
     The first line in the the Dockerfile is: `FROM alpine:3.11` This will import that layer into the Alpine_example image.
 
