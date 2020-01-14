@@ -6,5 +6,5 @@ Materials for Docker workshop
 - Benefits
 - Workshop
 -- Volumes
---  Networking
---  Swarm (Optional)
+-- Networking
+-- Clustering (Optional)
